@@ -110,8 +110,20 @@ included as part of the DOM structure of a full width text field.**
 
 ### Textarea
 
+#### Filled
+
 ```html
-<label class="mdc-text-field mdc-text-field--textarea mdc-text-field--no-label">
+<label class="mdc-text-field mdc-text-field--filled mdc-text-field--textarea mdc-text-field--no-label">
+  <span class="mdc-text-field__ripple"></span>
+  <textarea class="mdc-text-field__input" rows="8" cols="40" aria-label="Label"></textarea>
+  <span class="mdc-line-ripple"></span>
+</label>
+```
+
+#### Outlined
+
+```html
+<label class="mdc-text-field mdc-text-field--outlined mdc-text-field--textarea mdc-text-field--no-label">
   <textarea class="mdc-text-field__input" rows="8" cols="40" aria-label="Label"></textarea>
   <span class="mdc-notched-outline">
     <span class="mdc-notched-outline__leading"></span>
@@ -150,7 +162,7 @@ Add class name `mdc-text-field--no-label` and remove the label element from the 
 #### Textarea
 
 ```html
-<label class="mdc-text-field mdc-text-field--textarea mdc-text-field--no-label">
+<label class="mdc-text-field mdc-text-field--outlined mdc-text-field--textarea mdc-text-field--no-label">
   <textarea class="mdc-text-field__input" rows="8" cols="40" aria-label="Label"></textarea>
   <span class="mdc-notched-outline">
     <span class="mdc-notched-outline__leading"></span>
@@ -237,7 +249,7 @@ Alternatively, the character counter can be placed in the textarea's body by
 inserting the character counter at the top of the textarea container.
 
 ```html
-<label class="mdc-text-field mdc-text-field--textarea">
+<label class="mdc-text-field mdc-text-field--outlined mdc-text-field--textarea">
   <div class="mdc-text-field-character-counter">0 / 140</div>
   <textarea class="mdc-text-field__input" aria-labelledby="my-label-id" rows="8" cols="40" maxlength="140"></textarea>
   <span class="mdc-notched-outline">
@@ -255,7 +267,7 @@ It is recommended that `.mdc-text-field` and `.mdc-text-field-helper-line` eleme
 
 ### Text field with prefix and suffix text
 
-Prefix and suffix text can add context to a text field, such as a currency symbol prefix or a unit of mass suffix. 
+Prefix and suffix text can add context to a text field, such as a currency symbol prefix or a unit of mass suffix.
 A prefix, suffix, or both can be added within the default or outlined variants of text fields.
 
 ```html

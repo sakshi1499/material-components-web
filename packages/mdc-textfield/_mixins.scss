@@ -127,7 +127,36 @@
 
   .mdc-text-field--textarea {
     @include textarea_($query);
+
+    .mdc-text-field__input {
+      @include _textarea-input($query);
+    }
+
+    &.mdc-text-field--filled {
+      @include _textarea-filled($query);
+
+      &.mdc-text-field--no-label {
+        @include _textarea-filled-no-label($query);
+      }
+
+      .mdc-text-field__input {
+        @include _textarea-filled-input($query);
+      }
+    }
+
+    &.mdc-text-field--outlined {
+      @include _textarea-outlined($query);
+
+      .mdc-text-field__input {
+        @include _textarea-outlined-input($query);
+      }
+    }
+
+    .mdc-text-field-character-counter + .mdc-text-field__input {
+      @include _textarea-input-with-internal-counter($query);
+    }
   }
+
 
   .mdc-text-field--fullwidth {
     @include fullwidth_($query);
@@ -197,6 +226,14 @@
   // States
   .mdc-text-field--focused {
     @include focused_($query);
+
+    &.mdc-text-field--outlined {
+      @include _focused-outlined($query);
+
+      &.mdc-text-field--textarea {
+        @include _focused-outlined-textarea($query);
+      }
+    }
   }
 
   .mdc-text-field--invalid {
@@ -948,18 +985,7 @@
       display: flex;
       border: none !important; // FF adds unwanted border in HC mode on windows.
       background-color: transparent;
-      z-index: 1;
     }
-  }
-
-  .mdc-text-field__icon {
-    @include feature-targeting-mixins.targets($feat-structure) {
-      z-index: 2;
-    }
-  }
-
-  &.mdc-text-field--focused {
-    @include notched-outline-mixins.notch-offset(variables.$outlined-stroke-width, $query: $query);
   }
 }
 
@@ -1058,6 +1084,14 @@
       opacity: 1;
     }
   }
+}
+
+@mixin _focused-outlined($query: feature-targeting-functions.all()) {
+  @include notched-outline-mixins.notch-offset(variables.$outlined-stroke-width, $query: $query);
+}
+
+@mixin _focused-outlined-textarea($query: feature-targeting-functions.all()) {
+  @include notched-outline-mixins.notch-offset(0, $query: $query);
 }
 
 // Icons
@@ -1204,59 +1238,20 @@
 // Textarea
 
 @mixin textarea_($query: feature-targeting-functions.all()) {
-  // Note: The refactor to add the filled textarea style will result in a lot of the specificity issues that the
-  // textarea has being resolved by using the same --outlined variant class as the text field.
-  @include outline-color(variables.$outlined-idle-border, $query: $query);
-  @include hover-outline-color(variables.$outlined-hover-border, $query: $query);
-  @include focused-outline-color(primary, $query: $query);
-  @include outline-shape-radius(small, $query: $query);
-  @include ripple-mixins.states-base-color(transparent, $query: $query, $ripple-target: variables.$ripple-target);
-  @include fill-color(transparent, $query: $query);
+  $feat-structure: feature-targeting-functions.create-target($query, structure);
+  $feat-animation: feature-targeting-functions.create-target($query, animation);
+
   @include character-counter-mixins.character-counter-position(16px, 13px, $query: $query);
   @include _textarea-floating-label($query);
 
-  $feat-structure: feature-targeting-functions.create-target($query, structure);
-  $feat-animation: feature-targeting-functions.create-target($query, animation);
-  $feat-typography: feature-targeting-functions.create-target($query, typography);
-
   @include feature-targeting-mixins.targets($feat-structure) {
-    align-items: center;
     width: auto;
     height: auto;
     padding: 0; // see below for explanation
-    overflow: visible;
   }
 
-  @include feature-targeting-mixins.targets($feat-structure) {
+  @include feature-targeting-mixins.targets($feat-animation) {
     transition: none;
-  }
-
-  .mdc-text-field__input {
-    @include feature-targeting-mixins.targets($feat-structure) {
-      height: auto;
-      align-self: stretch;
-      box-sizing: border-box;
-      // Top margin is used to keep the text from overlapping the floating label
-      // when scrolling
-      margin-top: variables.$textarea-input-margin-top;
-      // Bottom and left/right margins are used to add space for the resize handle
-      margin-bottom: variables.$textarea-input-handle-margin;
-      @include rtl-mixins.reflexive-box(margin, right, variables.$textarea-input-handle-margin);
-      // Textarea has horizontal padding instead of the container. This allows the
-      // resize handle to extend to the edge of the container.
-      padding: 0 variables.$padding-horizontal variables.$textarea-input-padding-bottom;
-    }
-
-    @include feature-targeting-mixins.targets($feat-typography) {
-      line-height: 1.75rem; // 28sp
-    }
-  }
-
-  .mdc-text-field-character-counter + .mdc-text-field__input {
-    @include feature-targeting-mixins.targets($feat-structure) {
-      margin-bottom: 28px; // Leaves space for character counter if it exists.
-      padding-bottom: 0;
-    }
   }
 }
 
@@ -1266,10 +1261,7 @@
   // Resting label position
   .mdc-floating-label {
     @include feature-targeting-mixins.targets($feat-structure) {
-      @include rtl-mixins.reflexive-position(left, notched-outline-variables.$padding);
-
-      top: 17px;
-      width: auto;
+      top: variables.$textarea-label-top;
     }
 
     // Resets center aligning the floating label.
@@ -1279,18 +1271,105 @@
       }
     }
   }
+}
 
+@mixin _textarea-input($query: feature-targeting-functions.all()) {
+  $feat-structure: feature-targeting-functions.create-target($query, structure);
+  $feat-typography: feature-targeting-functions.create-target($query, typography);
+
+  @include feature-targeting-mixins.targets($feat-structure) {
+    height: auto;
+    box-sizing: border-box;
+    // Bottom and left/right margins are used to add space for the resize handle
+    margin-bottom: variables.$textarea-input-handle-margin;
+    @include rtl-mixins.reflexive-box(margin, right, variables.$textarea-input-handle-margin);
+    // Textarea has horizontal padding instead of the container. This allows the
+    // resize handle to extend to the edge of the container.
+    padding: 0 variables.$padding-horizontal;
+  }
+
+  @include feature-targeting-mixins.targets($feat-typography) {
+    line-height: variables.$textarea-line-height;
+  }
+}
+
+@mixin _textarea-input-with-internal-counter($query: feature-targeting-functions.all()) {
+  $feat-structure: feature-targeting-functions.create-target($query, structure);
+
+  @include feature-targeting-mixins.targets($feat-structure) {
+    // Leaves space for character counter if it exists.
+    margin-bottom: variables.$textarea-input-internal-counter-margin-bottom;
+    padding-bottom: 0;
+  }
+}
+
+@mixin _textarea-filled($query: feature-targeting-functions.all()) {
   // Floating label position
-  @include notched-outline-mixins.floating-label-float-position(variables.$textarea-label-position-y, $query: $query);
+  @include floating-label-mixins.float-position(variables.$textarea-filled-label-position-y, $query: $query);
 
   // Floating label animation
-  @include floating-label-mixins.shake-animation(textarea, $query: $query);
+  @include floating-label-mixins.shake-animation(textarea-filled, $query: $query);
+  @at-root {
+    @include floating-label-mixins.shake-keyframes(
+      textarea-filled,
+      variables.$textarea-filled-label-position-y,
+      0%,
+      $query: $query
+    );
+  }
+}
+
+@mixin _textarea-filled-no-label($query: feature-targeting-functions.all()) {
+  @include typography-mixins.baseline-top(variables.$textarea-baseline-top, $query: $query);
+}
+
+@mixin _textarea-filled-input($query: feature-targeting-functions.all()) {
+  $feat-structure: feature-targeting-functions.create-target($query, structure);
+
+  @include feature-targeting-mixins.targets($feat-structure) {
+    padding-bottom: variables.$textarea-filled-input-padding-bottom;
+  }
+}
+
+@mixin _textarea-outlined($query: feature-targeting-functions.all()) {
+  $feat-structure: feature-targeting-functions.create-target($query, structure);
+
+  @include notched-outline-mixins.notch-offset(0, $query: $query);
+
+  // Floating label position
+  @include notched-outline-mixins.floating-label-float-position(variables.$textarea-outlined-label-position-y, $query: $query);
+
+  // TODO(b/154640465): Outlined textarea specs are incorrect
+  .mdc-floating-label {
+    @include feature-targeting-mixins.targets($feat-structure) {
+      top: 17px;
+    }
+  }
+
+  // Floating label animation
+  @include floating-label-mixins.shake-animation(textarea-outlined, $query: $query);
   @include floating-label-mixins.shake-keyframes(
-    textarea,
-    variables.$textarea-label-position-y,
+    textarea-outlined,
+    variables.$textarea-outlined-label-position-y,
     0%,
     $query: $query
   );
+
+  @include feature-targeting-mixins.targets($feat-structure) {
+    align-items: center;
+  }
+}
+
+@mixin _textarea-outlined-input($query: feature-targeting-functions.all()) {
+  $feat-structure: feature-targeting-functions.create-target($query, structure);
+
+  @include feature-targeting-mixins.targets($feat-structure) {
+    align-self: stretch;
+    // Top margin is used to keep the text from overlapping the floating label
+    // when scrolling
+    margin-top: variables.$textarea-outlined-input-margin-top;
+    padding-bottom: variables.$textarea-outlined-input-padding-bottom;
+  }
 }
 
 // Text, Prefix and Suffix
